@@ -1,0 +1,661 @@
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Bunny Run - bun bun</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;overflow:hidden;background:#18351f;font-family:Arial,sans-serif;touch-action:none}
+canvas{display:block}
+#hud{position:fixed;top:14px;left:14px;z-index:4;color:white;font-weight:bold;font-size:19px;text-shadow:0 2px 8px #14200f;line-height:1.8}
+#shopButton{position:fixed;right:14px;top:14px;z-index:8;border:2px solid #fff5;background:linear-gradient(135deg,#ff8fc5,#e84b9a);color:white;border-radius:18px;padding:12px 17px;font-size:17px;font-weight:bold;box-shadow:0 5px 20px #0005}
+#help{position:fixed;bottom:12px;left:0;width:100%;text-align:center;color:white;text-shadow:0 2px 7px #000;font-size:13px;z-index:3;pointer-events:none}
+#screen,#shopScreen{position:fixed;inset:0;z-index:10;display:grid;place-items:center;background:#07180dc9;color:white;text-align:center;padding:15px}
+.panel{width:min(440px,94vw);padding:25px 20px;background:linear-gradient(145deg,#244d36,#142f26);border:2px solid #b5e9b5;border-radius:27px;box-shadow:0 15px 55px #0008}
+h1{font-size:43px;color:#ffd4eb;margin:0;text-shadow:0 3px 15px #ff65b0}
+.sub{font-size:24px;color:#ff9dce;letter-spacing:5px;margin:0 0 16px}
+p{line-height:1.7}
+button{cursor:pointer;border:0;border-radius:14px;padding:13px 22px;font-size:17px;font-weight:bold;background:linear-gradient(135deg,#ffb4d7,#f26aaa);color:#54203b}
+button:active{transform:scale(.96)}
+#shopScreen{display:none;background:#08160edb}
+.shopPanel{width:min(520px,96vw);max-height:88vh;overflow:auto;padding:20px;background:#203e30;border:2px solid #ffb9da;border-radius:24px}
+.shopPanel h2{color:#ffc4df;margin:4px}
+#skins{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.skin{padding:13px 8px;border-radius:16px;background:#315442;border:1px solid #8eb69b;color:white}
+.skin .emoji{font-size:37px;display:block;margin-bottom:5px}
+.skin small{display:block;margin:7px 0;color:#ffdfef}
+.skin button{padding:9px 12px;font-size:13px;width:100%}
+#closeShop{background:#52785d;color:white}
+#jumpButton{position:fixed;right:18px;bottom:52px;z-index:5;width:76px;height:76px;border-radius:50%;background:#ffb3d5e8;color:#6c2450;border:3px solid white;font-size:16px;display:none}
+@media(pointer:coarse){#jumpButton{display:block}}
+</style>
+</head>
+<body>
+
+<div id="hud">
+ 🥕 هویج‌های بازی: <span id="score">0</span><br>
+ 🧺 پس‌انداز: <span id="bank">0</span>
+</div>
+<button id="shopButton">🛍️ فروشگاه</button>
+<button id="jumpButton">پرش 🐰</button>
+<div id="help">کامپیوتر: ← → یا A / D و SPACE برای پرش | موبایل: لمس چپ و راست صفحه</div>
+
+<div id="screen">
+ <div class="panel">
+  <h1 id="heading">Bunny Run</h1>
+  <div class="sub">bun bun</div>
+  <p id="message">یه ماجراجویی شیرین توی جنگل شروع شده! 🥕🌸</p>
+  <p>هویج جمع کن، از موانع بپر و اسکین‌های جدید بخر.</p>
+  <button id="play">شروع بازی 🐰</button>
+ </div>
+</div>
+
+<div id="shopScreen">
+ <div class="shopPanel">
+  <h2>🌸 Bunny Shop 🌸</h2>
+  <p>هویج‌های ذخیره‌شده: 🥕 <b id="shopBank">0</b></p>
+  <div id="skins"></div>
+  <button id="closeShop">بستن فروشگاه</button>
+ </div>
+</div>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+/* ---------------- BASIC SETUP ---------------- */
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x9dbfce);
+scene.fog=new THREE.FogExp2(0x9dbfce,.012);
+
+const camera=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,220);
+camera.position.set(0,5.1,10);
+
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.1;
+document.body.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xdff5ff,0x33452a,2.1));
+const sun=new THREE.DirectionalLight(0xffe9c9,3);
+sun.position.set(-12,22,12);
+sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.left=-22;
+sun.shadow.camera.right=22;
+sun.shadow.camera.top=25;
+sun.shadow.camera.bottom=-25;
+scene.add(sun);
+
+const mat=(color,roughness=1,metalness=0)=>new THREE.MeshStandardMaterial({color,roughness,metalness});
+const grassMat=mat(0x477a3d);
+const dirtMat=mat(0x94734e);
+const barkMat=mat(0x62402c);
+const leafMats=[mat(0x254f30),mat(0x32683b),mat(0x3d7941),mat(0x527d43)];
+const stoneMat=mat(0x777d76);
+const whiteMat=mat(0xf6eee9,.85);
+const pinkMat=mat(0xf5a8ca,.6);
+const blackMat=mat(0x211b25,.35);
+const orangeMat=mat(0xff8a20,.55);
+const greenMat=mat(0x398e45);
+
+/* ---------------- GROUND ---------------- */
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(220,240),grassMat);
+ground.rotation.x=-Math.PI/2;
+ground.position.set(0,-.18,-65);
+ground.receiveShadow=true;
+scene.add(ground);
+
+const path=new THREE.Mesh(new THREE.PlaneGeometry(8.8,240),dirtMat);
+path.rotation.x=-Math.PI/2;
+path.position.set(0,-.09,-65);
+path.receiveShadow=true;
+scene.add(path);
+
+/* Grass blades */
+const grassObjects=[];
+for(let i=0;i<1100;i++){
+ const x=(Math.random()-.5)*25;
+ if(Math.abs(x)<5)continue;
+ const z=10-Math.random()*145;
+ const blade=new THREE.Mesh(
+  new THREE.ConeGeometry(.035,.32+Math.random()*.3,4),
+  leafMats[Math.floor(Math.random()*leafMats.length)]
+ );
+ blade.position.set(x,.05,z);
+ blade.rotation.z=(Math.random()-.5)*.45;
+ blade.castShadow=true;
+ scene.add(blade);
+ grassObjects.push(blade);
+}
+
+/* ---------------- FOREST ---------------- */
+const forestObjects=[];
+
+function makeTree(x,z,scale=1){
+ const g=new THREE.Group();
+ g.position.set(x,0,z);
+ g.scale.setScalar(scale);
+
+ const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.24,.43,3.5,12),barkMat);
+ trunk.position.y=1.75;
+ trunk.castShadow=true;
+ trunk.receiveShadow=true;
+ g.add(trunk);
+
+ for(let i=0;i<4;i++){
+  const a=i*Math.PI/2;
+  const root=new THREE.Mesh(new THREE.CylinderGeometry(.08,.22,1.05,7),barkMat);
+  root.position.set(Math.cos(a)*.34,.18,Math.sin(a)*.34);
+  root.rotation.z=Math.cos(a)*.65;
+  root.rotation.x=Math.sin(a)*.65;
+  g.add(root);
+ }
+
+ for(let i=0;i<3;i++){
+  const branch=new THREE.Mesh(new THREE.CylinderGeometry(.07,.13,1.4,8),barkMat);
+  branch.position.set((i-1)*.55,2.3,-.05);
+  branch.rotation.z=(i-1)*-.65;
+  g.add(branch);
+ }
+
+ for(let i=0;i<7;i++){
+  const crown=new THREE.Mesh(
+   new THREE.SphereGeometry(1,12,10),
+   leafMats[Math.floor(Math.random()*leafMats.length)]
+  );
+  crown.position.set((Math.random()-.5)*1.6,3.5+Math.random()*2.2,(Math.random()-.5)*1.3);
+  crown.scale.set(.95+Math.random()*.45,1.1+Math.random()*.6,.9+Math.random()*.4);
+  crown.castShadow=true;
+  g.add(crown);
+ }
+ scene.add(g);
+ forestObjects.push(g);
+}
+
+for(let z=15;z>-145;z-=5){
+ makeTree(-7-Math.random()*3,z,.9+Math.random()*.65);
+ makeTree(7+Math.random()*3,z-2,.9+Math.random()*.65);
+}
+
+/* bushes */
+for(let i=0;i<180;i++){
+ const side=Math.random()<.5?-1:1;
+ const g=new THREE.Group();
+ g.position.set(side*(5.3+Math.random()*5),0,10-Math.random()*145);
+ for(let j=0;j<5;j++){
+  const b=new THREE.Mesh(
+   new THREE.SphereGeometry(.4+Math.random()*.35,9,8),
+   leafMats[Math.floor(Math.random()*leafMats.length)]
+  );
+  b.position.set((Math.random()-.5)*.9,.3+Math.random()*.35,(Math.random()-.5)*.8);
+  b.castShadow=true;
+  g.add(b);
+ }
+ scene.add(g);
+ forestObjects.push(g);
+}
+
+/* Flowers and mushrooms */
+function makeFlower(x,z){
+ const g=new THREE.Group();
+ g.position.set(x,0,z);
+ const stem=new THREE.Mesh(new THREE.CylinderGeometry(.025,.04,.38,7),greenMat);
+ stem.position.y=.19;
+ g.add(stem);
+ const color=[0xffa8cb,0xffe6a2,0xffffff,0xbba5ed][Math.floor(Math.random()*4)];
+ const petalMat=mat(color);
+ for(let i=0;i<6;i++){
+  const a=i*Math.PI/3;
+  const p=new THREE.Mesh(new THREE.SphereGeometry(.105,9,8),petalMat);
+  p.position.set(Math.cos(a)*.13,.42,Math.sin(a)*.13);
+  g.add(p);
+ }
+ const center=new THREE.Mesh(new THREE.SphereGeometry(.075,9,8),mat(0xffd34f));
+ center.position.y=.43;
+ g.add(center);
+ scene.add(g);
+ forestObjects.push(g);
+}
+for(let i=0;i<130;i++){
+ const side=Math.random()<.5?-1:1;
+ makeFlower(side*(5+Math.random()*5),10-Math.random()*145);
+}
+
+/* ---------------- RABBIT ---------------- */
+const rabbit=new THREE.Group();
+scene.add(rabbit);
+
+const ball=new THREE.SphereGeometry(1,24,20);
+function sphere(parent,geometry,material,position,scale){
+ const m=new THREE.Mesh(geometry,material);
+ m.position.set(...position);
+ m.scale.set(...scale);
+ m.castShadow=true;
+ m.receiveShadow=true;
+ parent.add(m);
+ return m;
+}
+
+const rabbitParts=[];
+let currentSkin='classic';
+let photoMesh=null;
+let furTufts=[];
+
+function clearRabbit(){
+ while(rabbit.children.length)rabbit.remove(rabbit.children[0]);
+ rabbitParts.length=0;
+ furTufts.length=0;
+ photoMesh=null;
+}
+
+function buildRabbit(skin){
+ clearRabbit();
+ currentSkin=skin;
+
+ let bodyMat=whiteMat,faceMat=whiteMat,earMat=pinkMat;
+ let furColors=[0xf5eee9,0xffffff,0xe9ded9];
+
+ if(skin==='black'){
+  bodyMat=mat(0x211c29,.8);
+  faceMat=bodyMat;
+  earMat=mat(0x9b668a);
+  furColors=[0x211c29,0x393044,0x514456];
+ }
+
+ if(skin==='pink'){
+  bodyMat=mat(0xf4b5d0,.65);
+  faceMat=bodyMat;
+  earMat=mat(0xe77cac);
+  furColors=[0xf4b5d0,0xffd9eb,0xf28fbd,0xffeef6];
+ }
+
+ if(skin==='legend'){
+  bodyMat=mat(0xffc6df,.55,.05);
+  faceMat=bodyMat;
+  earMat=mat(0xffe1ef,.3);
+  furColors=[0xffc6df,0xffd9e9,0xffeaf3,0xf5a6cb,0xffd1e5];
+ }
+
+ sphere(rabbit,ball,bodyMat,[0,.75,.12],[.48,.65,.67]);
+ sphere(rabbit,ball,faceMat,[0,1.55,-.2],[.43,.43,.42]);
+ sphere(rabbit,ball,faceMat,[0,1.39,-.54],[.2,.15,.16]);
+ sphere(rabbit,ball,earMat,[0,1.46,-.68],[.065,.05,.05]);
+
+ for(const x of [-.17,.17]){
+  sphere(rabbit,ball,blackMat,[x,1.62,-.56],[.055,.07,.035]);
+  sphere(rabbit,ball,whiteMat,[x-.014,1.65,-.59],[.018,.022,.012]);
+ }
+ for(const x of [-.25,.25]){
+  sphere(rabbit,ball,earMat,[x,1.38,-.48],[.07,.045,.025]);
+ }
+
+ const ears=[];
+ for(const x of [-.2,.2]){
+  const pivot=new THREE.Group();
+  pivot.position.set(x,1.86,-.2);
+  rabbit.add(pivot);
+  sphere(pivot,ball,bodyMat,[0,.4,0],[.13,.48,.095]);
+  sphere(pivot,ball,earMat,[0,.4,-.087],[.075,.35,.025]);
+  ears.push(pivot);
+ }
+ rabbit.userData.ears=ears;
+
+ const legs=[];
+ for(const x of [-.25,.25]){
+  for(const z of [-.23,.38]){
+   const pivot=new THREE.Group();
+   pivot.position.set(x,.48,z);
+   rabbit.add(pivot);
+   sphere(pivot,ball,bodyMat,[0,-.12,0],[.15,.25,.15]);
+   sphere(pivot,ball,bodyMat,[0,-.29,-.06],[.17,.1,.22]);
+   legs.push(pivot);
+  }
+ }
+ rabbit.userData.legs=legs;
+ sphere(rabbit,ball,bodyMat,[0,.73,.73],[.18,.18,.18]);
+
+ // Fluffy tufts around body
+ for(let i=0;i<95;i++){
+  const a=Math.random()*Math.PI*2;
+  const y=.35+Math.random()*.85;
+  const radius=.47*Math.sqrt(Math.max(.1,1-Math.pow((y-.75)/.72,2)));
+  const tuft=new THREE.Mesh(
+   new THREE.SphereGeometry(.055+Math.random()*.045,7,6),
+   mat(furColors[Math.floor(Math.random()*furColors.length)],.7)
+  );
+  tuft.position.set(Math.cos(a)*radius,y,.12+Math.sin(a)*radius*.8);
+  tuft.castShadow=true;
+  rabbit.add(tuft);
+  furTufts.push(tuft);
+ }
+
+ // Pink legendary bow
+ if(skin==='pink'||skin==='legend'){
+  const bowMat=mat(skin==='legend'?0xff4fa9:0xff7fb9,.3);
+  sphere(rabbit,ball,bowMat,[-.24,1.95,-.22],[.15,.09,.09]);
+  sphere(rabbit,ball,bowMat,[.02,1.95,-.22],[.15,.09,.09]);
+  sphere(rabbit,ball,mat(0xffe7f4),[-.11,1.95,-.3],[.055,.06,.04]);
+ }
+
+ // HELLO KITTY DESIGN ON LEGENDARY RABBIT'S BACK
+ if(skin==='legend'){
+  const kittyWhite=mat(0xffffff);
+  const kittyPink=mat(0xff78ad);
+  const kittyBlack=mat(0x29202a);
+  const kittyYellow=mat(0xffd34f);
+
+  // Ears
+  sphere(rabbit,ball,kittyWhite,[-.19,1.35,.65],[.09,.19,.035]);
+  sphere(rabbit,ball,kittyWhite,[.19,1.35,.65],[.09,.19,.035]);
+
+  // Face
+  sphere(rabbit,ball,kittyWhite,[0,1.12,.69],[.27,.22,.045]);
+
+  // Eyes
+  sphere(rabbit,ball,kittyBlack,[-.105,1.13,.738],[.025,.045,.015]);
+  sphere(rabbit,ball,kittyBlack,[.105,1.13,.738],[.025,.045,.015]);
+
+  // Nose
+  sphere(rabbit,ball,kittyYellow,[0,1.09,.744],[.035,.025,.015]);
+
+  // Whiskers
+  for(const side of [-1,1]){
+   for(let i=0;i<3;i++){
+    const whisker=new THREE.Mesh(
+     new THREE.BoxGeometry(.13,.009,.009),
+     kittyBlack
+    );
+    whisker.position.set(side*.28,1.08+(i-1)*.045,.72);
+    whisker.rotation.z=side*.12;
+    rabbit.add(whisker);
+   }
+  }
+
+  // Bow
+  sphere(rabbit,ball,kittyPink,[-.24,1.29,.69],[.09,.065,.035]);
+  sphere(rabbit,ball,kittyPink,[-.34,1.29,.69],[.07,.055,.03]);
+  sphere(rabbit,ball,kittyPink,[-.14,1.29,.69],[.07,.055,.03]);
+
+  // Photo frame
+  const frame=new THREE.Mesh(
+   new THREE.BoxGeometry(.48,.48,.035),
+   mat(0xffb5d7,.3)
+  );
+  frame.position.set(0,1.65,.67);
+  rabbit.add(frame);
+
+  // User photo
+
+  // Original user photo embedded directly in HTML
+  const photoData='data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCADlAMgDASIAAhEBAxEB/8QAGwAAAQUBAQAAAAAAAAAAAAAAAAECAwQFBgf/xAAzEAACAgEDBAIBAwEHBQEAAAAAAQIDEQQhMQUSQVEiYRMGMnGRFCNCgaGxwRUkM1Jy4f/EABcBAQEBAQAAAAAAAAAAAAAAAAEAAgP/xAAbEQEBAQEAAwEAAAAAAAAAAAAAARECEiExQf/aAAwDAQACEQMRAD8A6eNik8eR2SGutRk8vglIkcsEU7G8qIWSIZz7I77CiWzjXF5e5k6vVNJ4eEWL597bfC8GBrdT3TcVwJQXWZzuVt2Oz3bsbKXagRs2uMkMpYYSkM5ZCh7igGMEoET0VOyWEQx3Zp6KK7c+PIFJBV0Rw3uZ+pl82WdXNb9u+ShKWVuSCkTVvdFdE1ZoatN7EM9nlcEndtgjk8hSfpdXZRYnCTTOo6b1mu/ELcQn4fhnHMs6HUKFsVNJr7JPQYSysoemYuh1UoRXa3KHp8o1oTU490eCCQBPAAiZ74N8DIWdqbm/3PYkUOzzsV5xy1J8RexI+ckll8lWyXdlsWyxt598Fe2TUXuKUeo3dkGlx5+zn5ydk2l/mX+r3pP8cXuuShTFpETu0r2PLbLTxGDbKU33EDGCFxl7CuPaSJgGH0S10ubwgJtUcy3WxfVqhBxWywVpQxslsiOTcXhihbPMn6IHuxZbsQBRgmr/AGPPJFkmg/jnH0ajIVn2NlMY+ReUDUK2N/xB4E8gWt07qMqXGu39r2bfo6jR3cNPMZLZ+zhW24qRqdP6jOlVxnLNcWv5Qp26YEFNysinF5TAgktbSSyQ2SxGMFu3yLJym/4RBJyw5P8AgkG/3Ne8IqXyxFvjC2LCw8pcRKHVLOyqxLlLIlzuqn+TUvzuSR4SRWT37nyyaEvvcBT7P248FSS5fstTWY7FeSzPCEGwjuPlX/UnhBRWPKJaqHZLIVqK9Wnct8bGjRpcR45J9Pp+6SSXxRe/A+3C87GW4yp6btWWudyjqtO4pP2dFbBWXKPgra/Tp1tpcIlY5qUGhjRs26NfjTS8GdZV2tL2LNiDGxJW9mhZRcUhseX4NRimy2G5wx0iNhVDs75DImRGBOUmtvBbg4yqj2rNifHtFOPJa0+a7FalmC5/gi3+layW0O7b/Cn/ALAVm69PdG6r5QbjKP8AygFOri8vHkrXyUUo+2StuMs8FO7Epb+NyB20YYXmRidatSg1neWDV7+2XdPiL/1Od63d+TUSS4WF/oRZ3dvkdCW+SJy2FiyFXIyykvQkV2tyaCpr8eRjk7J9q4W4iLOni7Hxya9FGEox8lPQ15+X9Da01bS7ny+EZdJD6aVCOEtx9uK0sE8Y4+sEDX5bNv2p7fYEymrmWN3sGsqX9mltn/llyuvZekR6tKSUF/JJmWUrtXoxdZV8oS95Oj1a7a9jI1UM2VJiqzrav7v7KMtjd1FScJdvgx7oYzsWs2Ic5QxixYjFgJgxouQJUy1prEvi902v9yomSVSxJP7Ite+P4JxjHeEnlL7Arzud7is7R2QCnd2RU1h8+DN1MXBvBoSl3ZXozNSpbtt8Mkr3XKVOPLeWc31GxS1MsPKNu5OMcz23ZzuofdbL+SSHl58D4/uGpDovcAsKXZXkKZKHPLZHJ92EXNN0629rtWw2qRt9Lo7oqT4NyqtJZ8I5qm3UdParnFuPODUr6xVZDf4teAbXNRPLUI8sdVXxhFfS5sTsbzKf+iNCuGECGMIgmv7z7LWCra8WElXVtdrbMXVSburj9mzqV37GTdFf2uv/ADZNJFFSrefJkauvEZe0bsYZqftGZrIJtvwyVYHDFfA66PZY0R5FyoyKuBo6JKAXOBoq3JL+h3nn0gH9NWbYxXvICXfSgvRn61pxWDTmtzK1ycdvbIMjqNihDHnOWc9Zu2bPWPim17MSUs8ASZxwLHkbwKtiCxp4d90U+M7nU6KyuuPKycjGx1NNGjoNdc5uMapWN8dpNTHSWX1zT/JFNY8oybtJ+WyVlS7Y+gl1KtrE6pxcdpecMnpuhbFSqln6Iw/Q2XadpSyb2mu/LBMoUKN0Umt/ZoaarsWPCBVNLKiV5pZ3LNnBSvtUc58Eor6jbL+mYcbPydRS/wDWJP1LqUq9lF7mFHV2R1MrEt3sR3HWdnbBNedmZHUGoSx7ZXfUdZjCjJxf0UtRqNRdLEk8+sENGv0/alMzzQUdROPa1svEijZFxm01gmaaKhBUIAqEFRJudHp+Xd6As9HjiiL9gJdeyhr491ey3NGUV4Kuog8ZION61P5qK4ayZDZrdcr7LmvUnj+HuY/kCcvYkd2K3hYCvlL2SXKNDLUx+HP2aPSbv+n2SjdW8Ree7Bo9J0nbpYya3kjSs0ddlfZKOwOnjHM66p2WznppOVU3nCLnTtDCqlztsUbZftWeC9Z0yKioRXxQ2vpsYvYRixp49r25XODXo3iihTTGpNRSWeTQoWIgKS54Rk6q1cF/WTxFmHZPulKcm+2PIGRHqIK2EvjnYyen0SVznOGU35N38NltE7IuMYxi3jlmBPqN0YxUJR53j2/8jg2OhptrWzSX8jYV1ajVTn2r44SZhR19n4+62tqLeFJcGj0vUp1yw8vO4n1VjW1xhFtJHKatp6ibXGToupXtwaTOZt/ewHRjBCCoWAPgu6SXsYyXTJu1YWcEnT9PxGEEvACaDKSyAl17RBZhkspLHJBY3jbZeyDjv1FH/uG8mHHdm716Kdzx7MVx7UBRy3ZLpofkvjH2yHll/pFf5NZH6aBT67rSVJVRWOFgnccLgWiPbXFEvbknTVZxbFjX9FjsQjiQ1Eobkq+KE4Bv4gFHWvKaM+qtqT9Pwy5qJZswEK0Tan+F1ycoNxb9MydRoIRuc5Qfby1F8nRyrIZ0KXKFY5vXauNlMaa9O4xXjwR6DSX93dGU60+ceTpFoa857V/QkdMYweEkQ8Ywdc/x0tefZgS3bNzrU+yLRhlGezBRBRYDJtLJRtTbIRUyTqNHYmk0wMvQ3ywkAl6BJJcFfUSxW9yex4MvqmpjRQ23j0Qct1S3v1bWeGUrudgssdtspvyxljzhgUePJp/p5OfUa4+2Zq3Nf9MYXVY//LIz67yC2JEthtf7R4GgZN4JMDJogi5G2bRHZWRtzSjlMm4y721YWdN80V7ZKU8Is6KL7voDU7hnwMdaLDRHN4JRE4pIramSjBk85YRi9X1ipplvvwiLnur3/l1TintEoCyk5Sbby2NNOFu0AAECgAEVnTW9sknwBBDkC0vT7bE4dxxvXtY7rOxPZHS6638UH6fJxGrt/JdKWfIhDwhHuNT+x/gCbjCLvSNQtN1Cm1vEe7Ev4exTbzETOI4Ia9SqfxJMmJ+nepLW6CKnLNtXxn9+mbDmkgaSJiS3K89VGG0ngil1CtPCeSPjasSrSy+CpdCcuOAlrVNYTx/IsdXWo4k0n/INSWIatK85ky7XBVrYZGcZcMe5ENObIbB3eQX3KMWRitq7VXBts43qerepufa8wi9vs0OudSbzTXLd/ux4Rgp5GRnrr8IIOwI0LmEGBEOJEAARIqYAlvuBNO0/UV3ZRhPdnGylk6H9Q3d9jintFHOuO+5IRySJ7DVsLnYkF5EaFTFUXLxgkt9J18un6uNq3jxOPtHoNNkL6Y2QkpRkspryeZduGdp+mrpLRxhL9qe30BjWvq74/ZnTrw2mtzZcVJEFul7wb56xkuEk9nlFWyNndk1p6OS4ZBLR2P0TrOopw1VlWMb/AEXaNXOzlYIf7G4v5E0YxqjngmOrE8rO1ZZhdY6p+KLjDeT4LGr1Ll8Y8HO9SzKeWTF9KE5OcnKTy3u2CEA05HZ2BiIdnH2KMwLwGRMgiiBkCQAUCTR6jb33b8vcpNZJ7MSm23hEUppftX9SaMwGBG2xOCGpYxRLXDLyVlJm/wBD08L4OclnDwRipp9BK1p9rSydL0yn8VCilwT1aWuC2RPVBLKj7Bpaqn8dyTu8LciisDoy7LE3wSSOqT3xghsxCSXsXU6+NVe278Iy56uVjzj5MhNT6m2MUZ05yse+ceiXsnayRQroi5S3YN/GbqKZJZl8Uc91C2MrO2O+PJp9Y6m5SlCp48NrwYDeWLHVAgALBQEFJBiCiEgAoMkNgEAknlIZuHIZFDOOAwIC3ZIqW5r9B1j02qVbTcLHjCWdyjodFfrr1TRDuk+X4S9s7bpfRaen1ppd9zXym1/t6QGRbhHbgnhFLhCKOPobZdGqOZNIGz5tQWWynfq8LEP6kd98prbZeipOwjCzk5yzJ5ZLRQ7Hl8ENc4d2ZJlh6ztilGGESWJRUIbbJGN1DUOUZxhsvZa1Wvi6u1PEm9zF1uurUHXW1KT5fogyNVtPGclZfZJdLum2RrkWKBBRCAFEFIgGAEgKxAJDAABA/Igogocmh0rpl3Ube2tYgn8pvhf/AKN6VoJdQ1kKFtF7yfpHf6XR16WqNVUVGEeEg1qQzpvTqOn0fjpjzvKT5k/svYwRufb4IbbptYhHf7BrBqtRCqDk2lg5fX6nUaq7MG1GL+KX+5tT0M75d19ja8RWyHrR11r4xSBr0xKNRq2v7ylte+B89bCH/kzH+UbP4VxgyOoaVKTWMxYhXl1bTx8t/wAIp39beMVw/wA2zO1NbptcfHggYsW1YnqrLm3OWSKU2hkWEnliNNkxEKwXAIgCgiRMAKBIguNgAEQBcCCgAAQSYDAAKdb+j6Iqm+/mbl2fwlv/AMnTvgAM1uGMTtQABAjSABSvdLtT2MXWapttdqAAMc71OXdZGRRYAa/HPr6WIj5ACAYeAAiGKkAEiMEAEh5HJbgBArQyS3ACREAAKf/Z';
+  const loader=new THREE.TextureLoader();
+  loader.load(photoData,texture=>{
+    texture.colorSpace=THREE.SRGBColorSpace;
+    const photo=new THREE.Mesh(
+      new THREE.PlaneGeometry(.41,.41),
+      new THREE.MeshBasicMaterial({map:texture})
+    );
+    photo.position.set(0,1.65,.695);
+    rabbit.add(photo);
+    photoMesh=photo;
+  },undefined,error=>console.error('Embedded photo error:',error));
+ }
+}
+
+buildRabbit('classic');
+rabbit.position.set(0,0,3);
+
+/* ---------------- CARROTS & OBSTACLES ---------------- */
+const objects=[];
+function carrot(z,lane){
+ const g=new THREE.Group();
+ const root=new THREE.Mesh(new THREE.ConeGeometry(.18,.62,14),orangeMat);
+ root.rotation.x=Math.PI;
+ root.castShadow=true;
+ g.add(root);
+ for(let i=0;i<3;i++){
+  const leaf=new THREE.Mesh(new THREE.ConeGeometry(.07,.3,7),greenMat);
+  leaf.position.set((i-1)*.1,.38,0);
+  leaf.rotation.z=(i-1)*.35;
+  g.add(leaf);
+ }
+ g.position.set(lane*2.4,.85,z);
+ g.userData.type='carrot';
+ scene.add(g);
+ objects.push(g);
+}
+
+function obstacle(z,lane,type){
+ const g=new THREE.Group();
+ if(type===0){
+  const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.55,1),stoneMat);
+  rock.position.y=.45;
+  rock.castShadow=true;
+  g.add(rock);
+ }else{
+  const log=new THREE.Mesh(new THREE.CylinderGeometry(.32,.32,1.8,12),barkMat);
+  log.rotation.z=Math.PI/2;
+  log.position.y=.35;
+  log.castShadow=true;
+  g.add(log);
+ }
+ g.position.set(lane*2.4,0,z);
+ g.userData.type='obstacle';
+ scene.add(g);
+ objects.push(g);
+}
+
+function row(z){
+ const safe=Math.floor(Math.random()*3)-1;
+ for(let l=-1;l<=1;l++){
+  if(l===safe)carrot(z,l);
+  else if(Math.random()<.75)obstacle(z,l,Math.random()<.5?0:1);
+  else carrot(z,l);
+ }
+}
+function populate(){for(let z=-12;z>-100;z-=8)row(z);}
+
+/* ---------------- GAME & SAVED COINS ---------------- */
+let score=0,lane=0,jump=0,velocity=0,speed=16,playing=false;
+let bank=Number(localStorage.getItem('bunnyBank')||0);
+let owned=JSON.parse(localStorage.getItem('bunnyOwned')||'["classic"]');
+
+// Remove the retired flower skin from old saved data
+owned=owned.filter(id=>id!=='flower');
+let selected=localStorage.getItem('bunnySkin')||'classic';
+if(selected==='flower')selected='classic';
+if(!owned.includes('classic'))owned.push('classic');
+
+const scoreEl=document.getElementById('score');
+const bankEl=document.getElementById('bank');
+const screen=document.getElementById('screen');
+const heading=document.getElementById('heading');
+const message=document.getElementById('message');
+const play=document.getElementById('play');
+const shopScreen=document.getElementById('shopScreen');
+
+const skinList=[
+ {id:'classic',name:'خرگوش کلاسیک',price:0,emoji:'🐰'},
+ {id:'black',name:'خرگوش مشکی',price:100,emoji:'🐈‍⬛'},
+ {id:'pink',name:'صورتی کیتی',price:169,emoji:'🎀'},
+ {id:'legend',name:'لجندری کیتی',price:222,emoji:'💗'}
+];
+
+function save(){
+ localStorage.setItem('bunnyBank',bank);
+ localStorage.setItem('bunnyOwned',JSON.stringify(owned));
+ localStorage.setItem('bunnySkin',selected);
+ bankEl.textContent=bank;
+ document.getElementById('shopBank').textContent=bank;
+}
+
+function renderShop(){
+ const holder=document.getElementById('skins');
+ holder.innerHTML='';
+ for(const s of skinList){
+  const card=document.createElement('div');
+  card.className='skin';
+  const ownedIt=owned.includes(s.id);
+  const active=selected===s.id;
+  card.innerHTML=`
+   <span class="emoji">${s.emoji}</span>
+   <b>${s.name}</b>
+   <small>${s.price===0?'رایگان':'🥕 '+s.price+' هویج'}</small>
+   <button>${active?'انتخاب شده':ownedIt?'انتخاب':'خرید'}</button>`;
+  card.querySelector('button').onclick=()=>{
+   if(owned.includes(s.id)){
+    selected=s.id;
+    buildRabbit(selected);
+    save();renderShop();
+   }else if(bank>=s.price){
+    // Each new purchase resets the saved carrots
+    bank=0;
+    owned.push(s.id);
+    selected=s.id;
+    buildRabbit(selected);
+    save();renderShop();
+   }else{
+    card.querySelector('small').textContent='هویج کافی نداری! 🥕';
+   }
+  };
+  holder.appendChild(card);
+ }
+}
+
+document.getElementById('shopButton').onclick=()=>{
+ renderShop();
+ shopScreen.style.display='grid';
+};
+document.getElementById('closeShop').onclick=()=>shopScreen.style.display='none';
+
+function reset(){
+ for(const o of objects)scene.remove(o);
+ objects.length=0;
+ score=0;lane=0;jump=0;velocity=0;speed=16;
+ scoreEl.textContent='0';
+ rabbit.position.set(0,0,3);
+ rabbit.rotation.set(0,0,0);
+ populate();
+}
+function move(dir){
+ if(!playing)return;
+ lane=Math.max(-1,Math.min(1,lane+dir));
+}
+function doJump(){if(playing&&jump===0)velocity=9;}
+
+addEventListener('keydown',e=>{
+ if(e.code==='ArrowLeft'||e.code==='KeyA')move(-1);
+ if(e.code==='ArrowRight'||e.code==='KeyD')move(1);
+ if(e.code==='Space')doJump();
+});
+
+/* Mobile and touchscreen: touch left/right half to steer */
+renderer.domElement.addEventListener('pointerdown',e=>{
+ if(e.pointerType==='mouse')return;
+ if(!playing)return;
+ const x=e.clientX/innerWidth;
+ if(x<.43)move(-1);
+ else if(x>.57)move(1);
+ else doJump();
+});
+document.getElementById('jumpButton').onclick=doJump;
+
+play.onclick=()=>{
+ reset();
+ buildRabbit(selected);
+ playing=true;
+ message.textContent='هویج جمع کن و از موانع فرار کن!';
+ play.textContent='شروع دوباره';
+ screen.style.display='none';
+};
+
+function endGame(){
+ playing=false;
+ bank+=score;
+ save();
+ heading.textContent='GAME OVER';
+ message.textContent='تو '+score+' تا هویج جمع کردی! 🥕';
+ play.textContent='دوباره بازی کن';
+ screen.style.display='grid';
+}
+
+/* ---------------- ANIMATION ---------------- */
+let last=0;
+function animate(time){
+ requestAnimationFrame(animate);
+ const dt=Math.min((time-last)/1000,.04);
+ last=time;
+
+ if(playing){
+  speed=Math.min(26,speed+dt*.16);
+  rabbit.position.x=THREE.MathUtils.lerp(rabbit.position.x,lane*2.4,dt*9);
+
+  velocity-=22*dt;
+  jump=Math.max(0,jump+velocity*dt);
+  if(jump===0)velocity=0;
+  rabbit.position.y=jump;
+
+  const phase=time*.013;
+  rabbit.userData.legs?.forEach((leg,i)=>{
+   leg.rotation.x=Math.sin(phase+(i%2)*Math.PI)*.8;
+  });
+  rabbit.userData.ears?.forEach((ear,i)=>{
+   ear.rotation.z=Math.sin(phase*1.5+i)*.13;
+  });
+  rabbit.rotation.z=THREE.MathUtils.lerp(
+   rabbit.rotation.z,(lane*2.4-rabbit.position.x)*-.07,dt*5
+  );
+
+  for(let i=objects.length-1;i>=0;i--){
+   const o=objects[i];
+   o.position.z+=speed*dt;
+
+   if(o.userData.type==='carrot'){
+    o.rotation.y+=dt*2.5;
+    o.position.y=.85+Math.sin(time*.004+o.position.z)*.08;
+    if(Math.abs(o.position.z-3)<.85&&Math.abs(o.position.x-rabbit.position.x)<.85){
+     score++;
+     scoreEl.textContent=score;
+     scene.remove(o);
+     objects.splice(i,1);
+     continue;
+    }
+   }else if(
+    Math.abs(o.position.z-3)<.8&&
+    Math.abs(o.position.x-rabbit.position.x)<.85&&jump<.9
+   ){
+    endGame();
+    break;
+   }
+
+   if(o.position.z>10){
+    scene.remove(o);
+    objects.splice(i,1);
+   }
+  }
+  if(objects.length<28)row(-100);
+ }
+
+ camera.position.x=THREE.MathUtils.lerp(camera.position.x,rabbit.position.x*.35,dt*2.5);
+ camera.position.y=5.1+jump*.12;
+ camera.lookAt(rabbit.position.x*.25,1.1,-3);
+ renderer.render(scene,camera);
+}
+save();
+requestAnimationFrame(animate);
+
+addEventListener('resize',()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+});
+</script>
+</body>
+</html>
