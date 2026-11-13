@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>آرشیو کامل | ALBERIA</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/hero-forest.css">
+  <link rel="icon" href="images/logo.svg" type="image/png">
+  <style>
+    .archive-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 1.75rem;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .archive-layout { grid-template-columns: 1fr; }
+    }
+    .filters {
+      background: var(--bg-card);
+      border: 1px solid var(--border-sakura);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      height: fit-content;
+      position: sticky;
+      top: 90px;
+    }
+    .filter-group {
+      margin-bottom: 1.5rem;
+    }
+    .filter-group:last-child { margin-bottom: 0; }
+    .filter-title {
+      color: var(--sakura-soft);
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .filter-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 0.35rem 0.5rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    .filter-option:hover {
+      background: rgba(244, 167, 185, 0.1);
+      color: var(--sakura-soft);
+    }
+    .filter-option input {
+      accent-color: var(--sakura-pink);
+    }
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .results-count {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .sort-select {
+      background: var(--bg-card);
+      border: 1px solid var(--border-sakura);
+      color: var(--text-primary);
+      padding: 0.45rem 0.9rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+    }
+    .sort-select:focus {
+      border-color: var(--sakura-pink);
+    }
+    .archive-search {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    .archive-search input {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-sakura);
+      border-radius: 50px;
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .archive-search input:focus {
+      border-color: var(--sakura-pink);
+      box-shadow: 0 0 0 3px rgba(244, 167, 185, 0.15);
+    }
+    .no-results {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body class="archive-page">
+  <div class="sakura-petals" id="petals"></div>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo-link" aria-label="ALBERIA - صفحه اصلی">
+        <img src="images/logo.svg" alt="ALBERIA" class="logo-img">
+      </a>
+      <nav class="nav" aria-label="ناوبری اصلی">
+        <a href="index.html" class="nav-link nav-home">ALBERIA</a>
+        <a href="archive.html" class="nav-link">آرشیو</a>
+        <a href="index.html#popular" class="nav-link">محبوب‌ها</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-link nav-dropdown-toggle" id="genresMenuToggle" aria-expanded="false" aria-controls="genresMenu">ژانر <span class="dropdown-caret">▾</span></button>
+          <div class="genres-menu" id="genresMenu" aria-label="ژانرهای بازی"></div>
+        </div>
+      </nav>
+      <div class="header-tools">
+        <div class="search-box">
+          <span class="search-icon">⌕</span>
+          <input type="search" class="search-input" placeholder="جستجوی نام بازی..." id="globalSearch" autocomplete="off" aria-label="جستجوی بازی">
+          <div class="search-suggestions" id="searchSuggestions" role="listbox"></div>
+        </div>
+        <button class="creator-btn" id="creatorBtn" title="اطلاعات تماس" aria-label="اطلاعات تماس">
+          <img src="images/albedo.webp" alt="اطلاعات تماس">
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="panel-overlay" id="panelOverlay"></div>
+  <aside class="creator-panel" id="creatorPanel">
+    <button class="panel-close" id="panelClose">×</button>
+    <div class="panel-content">
+      <img src="images/albedo.webp" alt="Albedo" class="panel-avatar">
+      <h2 class="panel-name">Albedo</h2>
+      <p class="panel-role">سازنده و نگهبان آرشیو ALBERIA</p>
+      <div class="panel-info">
+        <p>📧 ایمیل: <a href="mailto:JJuoz.C@gmail.com">JJuoz.C@gmail.com</a></p>
+        <p>✈️ تلگرام: <a href="https://t.me/DragonCastles" target="_blank">@DragonCastles</a></p>
+      </div>
+      <div class="panel-invite">
+        توی چنل تلگراممون جوین بدید و اگه انتقاد یا پیشنهادی داشتید بیان کنید 🌸
+      </div>
+    </div>
+  </aside>
+
+  <main class="container" style="padding-bottom: 3rem;">
+    <div class="section-header" style="margin-top: 1.5rem;">
+      <h1 class="section-title"><span class="icon">❀</span> آرشیو کامل بازی‌ها</h1>
+    </div>
+
+    <div class="archive-layout">
+      <!-- Filters Sidebar -->
+      <aside class="filters">
+        <div class="archive-search">
+          <input type="text" id="archiveSearch" placeholder="جستجوی نام بازی یا شخصیت...">
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-title">❀ ژانر</div>
+          <div class="filter-options" id="genreFilters">
+            <!-- filled by JS -->
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-title">❀ پلتفرم</div>
+          <div class="filter-options" id="platformFilters">
+            <label class="filter-option"><input type="checkbox" value="PC" class="platform-filter"> PC</label>
+            <label class="filter-option"><input type="checkbox" value="PS5" class="platform-filter"> PlayStation 5</label>
+            <label class="filter-option"><input type="checkbox" value="Xbox" class="platform-filter"> Xbox</label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <div class="filter-title">❀ مرتب‌سازی</div>
+          <select class="sort-select" id="sortSelect" style="width:100%">
+            <option value="popular">محبوب‌ترین</option>
+            <option value="newest">جدیدترین</option>
+            <option value="oldest">قدیمی‌ترین</option>
+            <option value="metacritic">بالاترین امتیاز</option>
+          </select>
+        </div>
+      </aside>
+
+      <!-- Results -->
+      <div>
+        <div class="results-header">
+          <span class="results-count" id="resultsCount">در حال بارگذاری...</span>
+        </div>
+        <div class="games-grid" id="archiveGrid">
+          <!-- cards -->
+        </div>
+        <div class="no-results hidden" id="noResults">
+          <p>✿ نتیجه‌ای پیدا نشد</p>
+          <p style="font-size:0.9rem;margin-top:0.5rem">فیلترها یا عبارت جستجو را تغییر دهید</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="images/logo.svg" alt="ALBERIA" class="footer-logo">
+        <p class="footer-desc">آرشیو بازی‌های کامپیوتری و کنسولی با هویت بصری ساکورا.</p>
+      </div>
+      <div>
+        <h4 class="footer-title">دسترسی سریع</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">خانه</a></li>
+          <li><a href="archive.html">آرشیو کامل</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">سازنده</h4>
+        <ul class="footer-links">
+          <li>Albedo</li>
+          <li><a href="https://t.me/DragonCastles" target="_blank">@DragonCastles</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© ۱۴۰۴ ALBERIA</span>
+      <span>تم ساکورا ✿</span>
+    </div>
+  </footer>
+
+  <button class="music-toggle" id="musicToggle">♪</button>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Archive specific logic
+    document.addEventListener('DOMContentLoaded', () => {
+      const genreFilters = document.getElementById('genreFilters');
+      if (genreFilters && typeof GENRES !== 'undefined') {
+        genreFilters.innerHTML = GENRES.map(g => 
+          `<label class="filter-option"><input type="checkbox" value="${g.name}" class="genre-filter"> ${g.icon} ${g.name}</label>`
+        ).join('');
+      }
+
+      // Read URL params
+      const params = new URLSearchParams(window.location.search);
+      const initialSearch = params.get('search') || '';
+      const initialGenre = params.get('genre') || '';
+      const initialSort = params.get('sort') || 'popular';
+
+      const searchInput = document.getElementById('archiveSearch');
+      if (searchInput && initialSearch) searchInput.value = initialSearch;
+
+      const sortSelect = document.getElementById('sortSelect');
+      if (sortSelect) sortSelect.value = initialSort;
+
+      function applyFilters() {
+        let list = [...ALL_GAMES];
+
+        // Search
+        const q = (searchInput?.value || '').trim().toLowerCase();
+        if (q) {
+          list = list.filter(g => 
+            g.title.toLowerCase().includes(q) ||
+            (g.titleFa && g.titleFa.includes(q)) ||
+            (g.characters && g.characters.some(c => c.toLowerCase().includes(q))) ||
+            (g.genres && g.genres.some(gen => gen.toLowerCase().includes(q)))
+          );
+        }
+
+        // Genre
+        const selectedGenres = [...document.querySelectorAll('.genre-filter:checked')].map(el => el.value);
+        if (selectedGenres.length) {
+          list = list.filter(g => g.genres && g.genres.some(gen => selectedGenres.includes(gen)));
+        }
+
+        // Platform
+        const selectedPlatforms = [...document.querySelectorAll('.platform-filter:checked')].map(el => el.value);
+        if (selectedPlatforms.length) {
+          list = list.filter(g => g.platforms && g.platforms.some(p => selectedPlatforms.includes(p)));
+        }
+
+        // Sort
+        const sort = sortSelect?.value || 'popular';
+        if (sort === 'newest') list.sort((a,b) => b.year - a.year);
+        else if (sort === 'oldest') list.sort((a,b) => a.year - b.year);
+        else if (sort === 'metacritic') list.sort((a,b) => (b.metacritic||0) - (a.metacritic||0));
+        else list.sort((a,b) => (b.popular?1:0) - (a.popular?1:0) || (b.metacritic||0) - (a.metacritic||0));
+
+        // Render
+        const grid = document.getElementById('archiveGrid');
+        const noRes = document.getElementById('noResults');
+        const count = document.getElementById('resultsCount');
+
+        if (list.length === 0) {
+          grid.innerHTML = '';
+          noRes.classList.remove('hidden');
+          count.textContent = '۰ بازی پیدا شد';
+        } else {
+          noRes.classList.add('hidden');
+          grid.innerHTML = list.map(g => `
+            <a href="game.html?id=${g.id}" class="game-card">
+              <img src="${g.cover}" alt="${g.title}" loading="lazy"
+                   onerror="this.src='https://via.placeholder.com/300x450/2c1c28/f4a7b9?text=${encodeURIComponent(g.title)}'">
+              <div class="card-overlay">
+                <div class="card-title">${g.titleFa || g.title}</div>
+              </div>
+            </a>
+          `).join('');
+          count.textContent = `${list.length} بازی پیدا شد`;
+        }
+      }
+
+      // Events
+      searchInput?.addEventListener('input', applyFilters);
+      sortSelect?.addEventListener('change', applyFilters);
+      document.querySelectorAll('.genre-filter, .platform-filter').forEach(el => {
+        el.addEventListener('change', applyFilters);
+      });
+
+      // Initial genre from URL
+      if (initialGenre) {
+        const genreMap = { action: 'اکشن', rpg: 'نقش‌آفرینی', adventure: 'ماجراجویی', soulslike: 'سولوسلیک', horror: 'ترسناک', 'open-world': 'جهان‌باز', story: 'داستان‌محور', roguelike: 'روگ‌لایک', platformer: 'پلتفرمر', shooter: 'شوتر', strategy: 'استراتژی', indie: 'ایندی' };
+        const name = genreMap[initialGenre];
+        if (name) {
+          const checkbox = [...document.querySelectorAll('.genre-filter')].find(c => c.value === name);
+          if (checkbox) checkbox.checked = true;
+        }
+      }
+
+      applyFilters();
+    });
+  </script>
+</body>
+</html>

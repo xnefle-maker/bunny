@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALBERIA | آرشیو بازی‌های کامپیوتری و کنسولی</title>
+  <meta name="description" content="آرشیو حرفه‌ای بازی‌های کامپیوتری و کنسولی با هویت بصری ساکورا — ALBERIA">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/hero-forest.css">
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+</head>
+<body class="home-page">
+
+  <div class="explore-backdrop" aria-hidden="true"></div>
+
+  <!-- Falling Sakura Petals -->
+  <div class="sakura-petals" id="petals"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo-link" aria-label="ALBERIA - صفحه اصلی">
+        <img src="images/logo.svg" alt="ALBERIA" class="logo-img">
+      </a>
+      <nav class="nav" aria-label="ناوبری اصلی">
+        <a href="index.html" class="nav-link nav-home">ALBERIA</a>
+        <a href="archive.html" class="nav-link">آرشیو</a>
+        <a href="index.html#popular" class="nav-link">محبوب‌ها</a>
+        <div class="nav-dropdown">
+          <button type="button" class="nav-link nav-dropdown-toggle" id="genresMenuToggle" aria-expanded="false" aria-controls="genresMenu">ژانر <span class="dropdown-caret">▾</span></button>
+          <div class="genres-menu" id="genresMenu" aria-label="ژانرهای بازی"></div>
+        </div>
+      </nav>
+      <div class="header-tools">
+        <div class="search-box">
+          <span class="search-icon">⌕</span>
+          <input type="search" class="search-input" placeholder="جستجوی نام بازی..." id="globalSearch" autocomplete="off" aria-label="جستجوی بازی">
+          <div class="search-suggestions" id="searchSuggestions" role="listbox"></div>
+        </div>
+        <button class="creator-btn" id="creatorBtn" title="اطلاعات تماس" aria-label="اطلاعات تماس">
+          <img src="images/albedo.webp" alt="اطلاعات تماس">
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Creator Panel -->
+  <div class="panel-overlay" id="panelOverlay"></div>
+  <aside class="creator-panel" id="creatorPanel">
+    <button class="panel-close" id="panelClose">×</button>
+    <div class="panel-content">
+      <img src="images/albedo.webp" alt="Albedo" class="panel-avatar">
+      <h2 class="panel-name">Albedo</h2>
+      <p class="panel-role">سازنده و نگهبان آرشیو ALBERIA</p>
+      
+      <div class="panel-info">
+        <p>📧 ایمیل: <a href="mailto:JJuoz.C@gmail.com">JJuoz.C@gmail.com</a></p>
+        <p>✈️ تلگرام: <a href="https://t.me/DragonCastles" target="_blank">@DragonCastles</a></p>
+      </div>
+      
+      <div class="panel-invite">
+        توی چنل تلگراممون جوین بدید و اگه انتقاد یا پیشنهادی داشتید بیان کنید 🌸
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <!-- GRAND HERO: full-width Sakura dragon scene -->
+    <section class="grand-hero" aria-label="ورود به دنیای ALBERIA">
+    </section>
+
+    <!-- Featured Slider -->
+    <section class="section container featured-section" id="featured" aria-label="بازی‌های منتخب">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">❀</span> بازی‌های منتخب</h2>
+      </div>
+      <div class="featured-slider polygon-slider" id="featuredSlider">
+        <button class="slider-nav prev" id="sliderPrev" type="button" aria-label="حرکت به عقب">‹</button>
+        <div class="slider-viewport" id="sliderViewport">
+          <div class="slider-track" id="sliderTrack"></div>
+        </div>
+        <button class="slider-nav next" id="sliderNext" type="button" aria-label="حرکت به جلو">›</button>
+      </div>
+    </section>
+
+    <!-- Popular Games -->
+    <section class="section container" id="popular">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">❀</span> بازی‌های محبوب</h2>
+        <a href="archive.html?sort=popular" class="section-link">مشاهده همه ←</a>
+      </div>
+      <div class="games-grid" id="popularGrid">
+        <!-- Cards injected by JS -->
+      </div>
+    </section>
+
+    <!-- Platform collections -->
+    <section class="section container platform-section" id="platforms">
+      <div class="section-header"><h2 class="section-title"><span class="icon">❀</span> بر اساس پلتفرم</h2></div>
+      <div class="platform-tiles" role="group" aria-label="فیلتر بر اساس پلتفرم">
+        <button class="platform-tile" type="button" data-platform="PS5" aria-label="نمایش بازی‌های پلی‌استیشن ۵">
+          <span class="platform-art"><img src="https://phantom-ps.com/cdn/shop/collections/P10.png?v=1770662635" alt="کنسول PlayStation 5" loading="lazy"></span><span class="platform-name">PlayStation 5</span>
+        </button>
+        <button class="platform-tile" type="button" data-platform="Xbox" aria-label="نمایش بازی‌های انحصاری ایکس‌باکس">
+          <span class="platform-art"><img src="https://www.genesisgames.co.il/uploads/images/big66488.jpg" alt="کنسول Xbox Series X" loading="lazy"></span><span class="platform-name">Xbox Exclusives</span>
+        </button>
+        <button class="platform-tile" type="button" data-platform="PC" aria-label="نمایش بازی‌های کامپیوتر">
+          <span class="platform-art"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gaming-PC_20240426_HOF2520-HDR_RAW-Export.png" alt="کیس کامپیوتر گیمینگ" loading="lazy"></span><span class="platform-name">PC Gaming</span>
+        </button>
+      </div>
+      <div class="games-grid platform-results" id="platformGrid" aria-live="polite"></div>
+      <button class="platform-expand" id="platformExpand" type="button" hidden aria-expanded="false">
+        <span class="platform-expand-line"></span><span class="platform-expand-arrow" aria-hidden="true">↓</span>
+        <span class="platform-expand-label">نمایش همه بازی‌ها</span>
+      </button>
+    </section>
+
+    <!-- Genres -->
+    <section class="section container" id="genres">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">❀</span> ژانرها</h2>
+      </div>
+      <div class="genres-grid" id="genresGrid">
+        <!-- Genres injected -->
+      </div>
+    </section>
+
+    <!-- New Games -->
+    <section class="section container" id="new">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">❀</span> بازی‌های تازه</h2>
+        <a href="archive.html?sort=newest" class="section-link">مشاهده همه ←</a>
+      </div>
+      <div class="games-grid" id="newGrid">
+        <!-- Cards injected -->
+      </div>
+    </section>
+
+    <!-- Upcoming -->
+    <section class="section container" id="upcoming">
+      <div class="section-header">
+        <h2 class="section-title"><span class="icon">❀</span> بازی‌های آینده / به‌زودی</h2>
+      </div>
+      <div class="games-grid" id="upcomingGrid">
+        <!-- Cards injected -->
+      </div>
+    </section>
+
+    <!-- CTA to Archive -->
+    <section class="section container" style="text-align: center; padding: 2rem 0;">
+      <div class="sakura-divider">✿ ❀ ✿</div>
+      <h2 style="font-family: var(--font-display); color: var(--sakura-soft); margin-bottom: 1rem;">ورود به آرشیو کامل</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem; max-width: 500px; margin-inline: auto;">
+        صدها بازی با فیلتر ژانر، پلتفرم و جستجوی پیشرفته در انتظار شماست
+      </p>
+      <a href="archive.html" class="btn-primary">مشاهده آرشیو کامل ALBERIA</a>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="images/logo.svg" alt="ALBERIA" class="footer-logo">
+        <p class="footer-desc">
+          آرشیو بازی‌های کامپیوتری و کنسولی با هویت بصری ساکورا. 
+          ساخته‌شده با عشق برای عاشقان بازی و زیبایی.
+        </p>
+      </div>
+      
+      <div>
+        <h4 class="footer-title">دسترسی سریع</h4>
+        <ul class="footer-links">
+          <li><a href="index.html">خانه</a></li>
+          <li><a href="archive.html">آرشیو کامل</a></li>
+          <li><a href="#popular">محبوب‌ها</a></li>
+          <li><a href="#genres">ژانرها</a></li>
+        </ul>
+      </div>
+      
+      <div>
+        <h4 class="footer-title">سازنده</h4>
+        <ul class="footer-links">
+          <li>Albedo</li>
+          <li><a href="mailto:JJuoz.C@gmail.com">JJuoz.C@gmail.com</a></li>
+          <li><a href="https://t.me/DragonCastles" target="_blank">تلگرام: @DragonCastles</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <span>© ۱۴۰۴ ALBERIA — همه حقوق محفوظ است</span>
+      <span>تم ساکورا با عشق ساخته شد ✿</span>
+    </div>
+  </footer>
+
+  <!-- Music Toggle -->
+  <button class="music-toggle" id="musicToggle" title="پخش / توقف موسیقی">♪</button>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

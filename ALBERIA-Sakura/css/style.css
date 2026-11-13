@@ -1,0 +1,1527 @@
+/* ============================================
+   ALBERIA - Sakura Game Archive
+   Soft Sakura Pink + Dark Wood + Misty Forest
+   ============================================ */
+
+:root {
+  /* Core Palette - Soft Sakura */
+  --sakura-pink: #f4a7b9;
+  --sakura-soft: #f8c1cc;
+  --sakura-deep: #e07a8f;
+  --sakura-glow: #ffb6c1;
+  --sakura-pale: #fce4ec;
+  
+  /* Dark Wood / Brown */
+  --wood-dark: #2c1a12;
+  --wood-mid: #3d2b1f;
+  --wood-light: #5c4033;
+  --wood-bark: #1a100c;
+  
+  /* Backgrounds - Misty Night Forest */
+  --bg-deep: #120a10;
+  --bg-main: #1a0f16;
+  --bg-card: #23151f;
+  --bg-elevated: #2c1c28;
+  --bg-mist: rgba(244, 167, 185, 0.04);
+  
+  /* Text */
+  --text-primary: #f8e8ec;
+  --text-secondary: #d4b8c0;
+  --text-muted: #a88a94;
+  --text-accent: #f4a7b9;
+  
+  /* Borders & Effects */
+  --border-sakura: rgba(244, 167, 185, 0.25);
+  --border-wood: rgba(92, 64, 51, 0.6);
+  --glow-pink: 0 0 20px rgba(244, 167, 185, 0.25);
+  --glow-soft: 0 0 40px rgba(244, 167, 185, 0.12);
+  
+  /* Spacing */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  
+  /* Fonts */
+  --font-main: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+  --font-display: 'Georgia', 'Times New Roman', serif;
+}
+
+/* Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(ellipse at 20% 0%, rgba(244, 167, 185, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(224, 122, 143, 0.06) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg-deep) 0%, #150c12 100%);
+}
+
+/* Sakura Petals Falling Animation (lightweight) */
+.sakura-petals {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.petal {
+  position: absolute;
+  background: var(--sakura-pink);
+  border-radius: 150% 0 150% 0;
+  opacity: 0.5;
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg) translateX(0);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg) translateX(40px);
+    opacity: 0;
+  }
+}
+
+/* ========== HEADER ========== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: linear-gradient(180deg, rgba(18, 10, 16, 0.97) 0%, rgba(18, 10, 16, 0.92) 100%);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-sakura);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo-img {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(244, 167, 185, 0.35));
+  transition: filter 0.3s ease;
+}
+
+.logo-img:hover {
+  filter: drop-shadow(0 0 14px rgba(244, 167, 185, 0.55));
+}
+
+/* Navigation */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--sakura-soft);
+  background: rgba(244, 167, 185, 0.1);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 2px;
+  background: var(--sakura-pink);
+  border-radius: 2px;
+}
+
+/* Search */
+.search-box {
+  position: relative;
+  flex: 0 1 280px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.55rem 1rem 0.55rem 2.4rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-sakura);
+  border-radius: 50px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-input:focus {
+  border-color: var(--sakura-pink);
+  box-shadow: 0 0 0 3px rgba(244, 167, 185, 0.15);
+  background: var(--bg-elevated);
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sakura-pink);
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+
+/* Header Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border-sakura);
+  background: var(--bg-card);
+  color: var(--sakura-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 1.1rem;
+}
+
+.btn-icon:hover {
+  background: rgba(244, 167, 185, 0.15);
+  border-color: var(--sakura-pink);
+  box-shadow: var(--glow-pink);
+}
+
+/* Creator Avatar (Dragon Head) */
+.creator-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--sakura-pink);
+  background: var(--bg-card);
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 12px rgba(244, 167, 185, 0.3);
+}
+
+.creator-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(244, 167, 185, 0.5);
+}
+
+.creator-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ========== MAIN CONTENT ========== */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section {
+  margin: 2.5rem 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-sakura);
+  position: relative;
+}
+
+.section-header::after {
+  content: '✿';
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  background: var(--bg-deep);
+  padding: 0 10px;
+  color: var(--sakura-pink);
+  font-size: 0.9rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--sakura-soft);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title .icon {
+  color: var(--sakura-pink);
+}
+
+.section-link {
+  color: var(--sakura-pink);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.section-link:hover {
+  color: var(--sakura-glow);
+  text-decoration: underline;
+}
+
+/* ========== FEATURED SLIDER ========== */
+.featured-slider {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-sakura);
+  box-shadow: var(--glow-soft);
+  background: var(--bg-card);
+  height: 380px;
+}
+
+.slider-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide {
+  min-width: 100%;
+  height: 100%;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+}
+
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, 
+    rgba(18, 10, 16, 0.85) 0%, 
+    rgba(18, 10, 16, 0.4) 50%, 
+    rgba(18, 10, 16, 0.2) 100%);
+}
+
+.slide-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 2.5rem;
+  z-index: 2;
+}
+
+.slide-title {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+
+.slide-meta {
+  color: var(--sakura-soft);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.slide-desc {
+  color: var(--text-secondary);
+  max-width: 520px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  background: linear-gradient(135deg, var(--sakura-deep), var(--sakura-pink));
+  color: #1a0a10;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(224, 122, 143, 0.35);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(224, 122, 143, 0.5);
+}
+
+.slider-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(18, 10, 16, 0.7);
+  border: 1px solid var(--border-sakura);
+  color: var(--sakura-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.25s;
+  font-size: 1.2rem;
+}
+
+.slider-nav:hover {
+  background: rgba(244, 167, 185, 0.2);
+  border-color: var(--sakura-pink);
+}
+
+.slider-nav.prev { left: 1rem; }
+.slider-nav.next { right: 1rem; }
+
+.slider-dots {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 5;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(244, 167, 185, 0.35);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.dot.active {
+  background: var(--sakura-pink);
+  width: 22px;
+  border-radius: 4px;
+}
+
+/* ========== GAME CARDS GRID ========== */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+@media (max-width: 1100px) {
+  .games-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 750px) {
+  .games-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .games-grid { grid-template-columns: 1fr; }
+}
+
+.game-card {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  aspect-ratio: 2 / 3;
+  background: var(--bg-card);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Sakura frame effect */
+.game-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+              linear-gradient(135deg, var(--sakura-pink), transparent, var(--sakura-deep)) border-box;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.game-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(244, 167, 185, 0.2), 0 0 0 1px var(--sakura-pink);
+}
+
+.game-card:hover::before {
+  opacity: 1;
+}
+
+.game-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.game-card:hover img {
+  transform: scale(1.06);
+}
+
+/* Name only on hover */
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, 
+    rgba(18, 10, 16, 0.92) 0%, 
+    rgba(18, 10, 16, 0.4) 40%, 
+    transparent 70%);
+  display: flex;
+  align-items: flex-end;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+}
+
+.game-card:hover .card-overlay {
+  opacity: 1;
+}
+
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  line-height: 1.3;
+}
+
+/* ========== GENRES ========== */
+.genres-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.genre-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-sakura);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.genre-card::after {
+  content: '❀';
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 0.8rem;
+  color: var(--sakura-pink);
+  opacity: 0.4;
+}
+
+.genre-card:hover {
+  background: rgba(244, 167, 185, 0.1);
+  border-color: var(--sakura-pink);
+  color: var(--sakura-soft);
+  transform: translateY(-3px);
+  box-shadow: var(--glow-pink);
+}
+
+.genre-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.genre-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  margin-top: 4rem;
+  padding: 2.5rem 0 1.5rem;
+  background: linear-gradient(180deg, transparent, rgba(26, 15, 22, 0.9));
+  border-top: 1px solid var(--border-sakura);
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sakura-pink), transparent);
+}
+
+.footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 2.5rem;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.footer-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  align-self: flex-start;
+}
+
+.footer-desc {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.footer-title {
+  color: var(--sakura-soft);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.footer-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: var(--sakura-pink);
+}
+
+.footer-bottom {
+  max-width: 1400px;
+  margin: 2rem auto 0;
+  padding: 1.25rem 1.5rem 0;
+  border-top: 1px solid rgba(244, 167, 185, 0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ========== CREATOR PANEL ========== */
+.creator-panel {
+  position: fixed;
+  top: 0;
+  right: -380px;
+  width: 360px;
+  height: 100vh;
+  background: var(--bg-main);
+  border-left: 1px solid var(--border-sakura);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.creator-panel.open {
+  right: 0;
+}
+
+.panel-close {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.panel-close:hover {
+  color: var(--sakura-pink);
+}
+
+.panel-content {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.panel-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--sakura-pink);
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  box-shadow: 0 0 25px rgba(244, 167, 185, 0.4);
+}
+
+.panel-name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--sakura-soft);
+  margin-bottom: 0.25rem;
+}
+
+.panel-role {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.panel-info {
+  background: var(--bg-card);
+  border: 1px solid var(--border-sakura);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  text-align: right;
+  direction: rtl;
+}
+
+.panel-info p {
+  margin-bottom: 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.panel-info a {
+  color: var(--sakura-pink);
+  text-decoration: none;
+}
+
+.panel-info a:hover {
+  text-decoration: underline;
+}
+
+.panel-invite {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: rgba(244, 167, 185, 0.08);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Overlay for panel */
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+}
+
+.panel-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ========== MUSIC TOGGLE ========== */
+.music-toggle {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 900;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-sakura);
+  color: var(--sakura-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--glow-soft);
+  transition: all 0.3s;
+  font-size: 1.2rem;
+}
+
+.music-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: var(--glow-pink);
+}
+
+.music-toggle.playing {
+  background: rgba(244, 167, 185, 0.15);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  .header-inner {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  .nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+  
+  .search-box {
+    flex: 1;
+  }
+  
+  .featured-slider {
+    height: 300px;
+  }
+  
+  .slide-title {
+    font-size: 1.6rem;
+  }
+  
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Utility */
+.hidden { display: none !important; }
+
+/* Sakura decorative divider */
+.sakura-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  color: var(--sakura-pink);
+  opacity: 0.6;
+}
+
+.sakura-divider::before,
+.sakura-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sakura-pink), transparent);
+}
+
+/* ========== WOODEN SAKURA FRAME ========== */
+body {
+  border: 14px solid transparent;
+  border-image: linear-gradient(135deg, 
+    #5c4033 0%, 
+    #8b5a4a 15%, 
+    #f4a7b9 35%, 
+    #e07a8f 50%, 
+    #f4a7b9 65%, 
+    #8b5a4a 85%, 
+    #5c4033 100%) 1;
+  box-shadow: 
+    inset 0 0 40px rgba(244, 167, 185, 0.08),
+    0 0 0 4px #2c1a12,
+    0 0 60px rgba(244, 167, 185, 0.1);
+}
+
+/* Inner decorative line */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 18px;
+  border: 1px solid rgba(244, 167, 185, 0.2);
+  pointer-events: none;
+  z-index: 10000;
+  border-radius: 2px;
+}
+
+/* Corner sakura decorations */
+body::after {
+  content: '✿';
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  font-size: 1.4rem;
+  color: var(--sakura-pink);
+  opacity: 0.7;
+  z-index: 10001;
+  text-shadow: 0 0 10px rgba(244, 167, 185, 0.5);
+  pointer-events: none;
+}
+
+/* ========== GRAND HERO SECTION ========== */
+.grand-hero {
+  position: relative;
+  min-height: 520px;
+  margin: 1.5rem auto 0;
+  max-width: 1400px;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  overflow: hidden;
+}
+
+.grand-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 30% 50%, rgba(244, 167, 185, 0.15) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 50%, rgba(224, 122, 143, 0.12) 0%, transparent 55%),
+    linear-gradient(180deg, transparent 0%, var(--bg-deep) 100%);
+  z-index: 0;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-sakura);
+}
+
+.hero-dragon {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  max-width: 420px;
+  text-align: center;
+}
+
+.hero-dragon img {
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  filter: drop-shadow(0 0 30px rgba(244, 167, 185, 0.45));
+  animation: float 6s ease-in-out infinite;
+}
+
+.hero-albedo {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  max-width: 280px;
+  text-align: center;
+}
+
+.hero-albedo img {
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  filter: drop-shadow(0 0 25px rgba(244, 167, 185, 0.35));
+  animation: float 7s ease-in-out infinite reverse;
+}
+
+.hero-center {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 0 0 auto;
+  padding: 0 1rem;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  color: var(--sakura-soft);
+  letter-spacing: 4px;
+  text-shadow: 0 0 30px rgba(244, 167, 185, 0.5);
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  max-width: 320px;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@media (max-width: 900px) {
+  .grand-hero {
+    flex-direction: column;
+    min-height: auto;
+    padding: 2rem 1rem;
+  }
+  .hero-dragon, .hero-albedo {
+    max-width: 220px;
+  }
+  .hero-title {
+    font-size: 2.2rem;
+  }
+}
+
+/* Improve card quality */
+.game-card img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+
+/* ==========================================================
+   ALBERIA — unified Sakura world (reference-matched revision)
+   Shared forest backdrop + blossom/bark frame on EVERY page.
+   ========================================================== */
+:root {
+  --sakura-pink:#ef9db9; --sakura-soft:#ffdce8; --sakura-deep:#9f496d;
+  --wood-dark:#24101d; --wood-mid:#6d354c;
+  --bg-deep:#170b17; --bg-card:rgba(35,14,31,.84); --bg-elevated:rgba(53,21,43,.88);
+  --border-sakura:rgba(244,164,193,.48);
+}
+html { background:#160b17; scroll-behavior:smooth; }
+body {
+  position:relative; min-height:100vh; isolation:isolate;
+  background-color:#160b17 !important;
+  background-image:
+    linear-gradient(90deg, rgba(19,8,18,.22) 0%, rgba(22,9,21,.66) 48%, rgba(17,7,17,.86) 100%),
+    linear-gradient(180deg, rgba(21,8,20,.30), rgba(18,7,17,.80)),
+    url('../images/dragon-sakura-scene.png') !important;
+  background-repeat:no-repeat !important;
+  background-position:left center !important;
+  background-size:cover !important;
+  background-attachment:fixed !important;
+  border:0 !important; box-shadow:none !important; color:#f9eaf0;
+}
+body::before {
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(ellipse at 20% 20%,rgba(219,105,151,.14),transparent 42%),
+             linear-gradient(180deg,rgba(15,6,15,.08),rgba(15,6,15,.40));
+}
+/* Actual blossom-and-bark border, sampled from the approved reference image. */
+body::after {
+  content:''; position:fixed; inset:0; z-index:10000; pointer-events:none;
+  border:clamp(12px,1.8vw,25px) solid transparent;
+  border-image:url('../images/sakura-frame.jpg') 78 stretch;
+  box-shadow:inset 0 0 24px rgba(17,5,15,.52);
+}
+.site-frame,.frame-corner { display:none !important; }
+.header {
+  position:relative; z-index:5;
+  background:linear-gradient(180deg,rgba(31,11,28,.96),rgba(38,15,34,.82)) !important;
+  border-bottom:1px solid rgba(245,166,194,.42) !important;
+  box-shadow:0 10px 32px rgba(8,2,9,.45) !important;
+  backdrop-filter:blur(13px);
+}
+.logo-img { filter:drop-shadow(0 0 12px rgba(245,143,180,.6)); }
+.nav-link.active::after { background:linear-gradient(90deg,transparent,#f5a7c2,transparent) !important; }
+.search-box,.btn-icon,.creator-btn { background:rgba(28,9,25,.78) !important; border-color:rgba(242,164,190,.55) !important; }
+/* The dragon-and-forest image is the whole hero, not a narrow side panel. */
+.grand-hero {
+  position:relative; isolation:isolate; overflow:hidden;
+  width:min(100% - 44px,1760px) !important; max-width:1760px !important;
+  min-height:clamp(570px,61vw,850px) !important;
+  margin:0 auto !important; padding:clamp(130px,17vw,230px) 5vw 100px !important;
+  display:flex !important; align-items:center; justify-content:center;
+  direction:rtl; border:0 !important; border-radius:0 !important;
+  background:transparent !important;
+}
+.grand-hero-bg {
+  position:absolute; inset:0; z-index:-1;
+  background-image:
+    linear-gradient(90deg,rgba(20,8,19,.02) 0%,rgba(23,8,20,.10) 36%,rgba(24,8,21,.58) 60%,rgba(19,7,18,.30) 100%),
+    linear-gradient(180deg,rgba(16,6,16,.05),rgba(16,6,16,.24)),
+    url('../images/dragon-sakura-scene.png') !important;
+  background-position:center,left center,left center !important;
+  background-size:cover,cover,auto 100% !important;
+  background-repeat:no-repeat !important;
+  border:0 !important; border-radius:0 !important;
+  box-shadow:inset 0 -45px 70px rgba(14,5,14,.55),inset 0 35px 55px rgba(14,5,14,.2) !important;
+}
+.hero-dragon,.hero-albedo { display:none !important; }
+.hero-center {
+  position:relative; z-index:2; flex:0 1 48% !important; max-width:650px;
+  margin-inline-start:38%; padding:2rem 2.3rem !important; text-align:center;
+  background:radial-gradient(ellipse,rgba(35,10,31,.60),rgba(35,10,31,.18) 66%,transparent 100%);
+  border:0 !important; border-radius:0 !important;
+}
+.hero-title { font-size:clamp(3.2rem,6vw,5.6rem) !important; color:#ffe1ea !important;
+  letter-spacing:.055em; text-shadow:0 0 16px #ee85ae,0 0 45px rgba(239,124,170,.78),0 4px 20px #170916 !important; }
+.hero-subtitle { color:#ffebf1 !important; font-size:clamp(1rem,1.5vw,1.3rem) !important; text-shadow:0 2px 12px #170916; }
+.sakura-canopy { z-index:4; top:0 !important; height:clamp(70px,8vw,130px) !important; background-size:100% 100% !important; }
+.btn-primary { background:linear-gradient(135deg,#78314f,#e98eae 52%,#873b5d) !important;
+  border:1px solid rgba(255,218,230,.85) !important; box-shadow:0 0 25px rgba(222,115,157,.4),inset 0 1px rgba(255,255,255,.3) !important; }
+.container { position:relative; z-index:1; }
+.section { background:rgba(24,9,22,.20); }
+.featured-slider,.game-card,.genre-card,.creator-panel,.filters,.tab-content,.game-hero {
+  border-color:rgba(230,151,177,.52) !important;
+  box-shadow:0 12px 30px rgba(8,3,9,.40),inset 0 0 0 1px rgba(255,208,222,.08) !important;
+}
+.filters,.tab-content { background:rgba(34,13,30,.86) !important; backdrop-filter:blur(8px); }
+.footer { position:relative; z-index:1; background:linear-gradient(180deg,rgba(29,11,25,.92),rgba(13,6,14,.98)) !important; }
+.sakura-divider { color:#efa2bc; }
+@media(max-width:900px) {
+  body { background-position:22% center !important; }
+  .grand-hero { width:calc(100% - 28px) !important; min-height:650px !important; padding:150px 1rem 80px !important; }
+  .grand-hero-bg { background-size:cover,cover,auto 80% !important; background-position:center,center,left bottom !important; }
+  .hero-center { flex-basis:100% !important; margin:0 auto !important; padding:1.2rem !important; }
+  .hero-title { font-size:clamp(2.7rem,12vw,4.3rem) !important; }
+  .sakura-canopy { height:84px !important; background-size:auto 100% !important; }
+}
+@media(max-width:600px) {
+  body::after { border-width:10px; }
+  .grand-hero { min-height:560px !important; width:calc(100% - 20px) !important; }
+  .grand-hero-bg { background-size:cover,cover,auto 68% !important; }
+}
+
+
+/* ==========================================================
+   ALBERIA — EXACT FULL-PAGE REFERENCE WALLPAPER
+   User-approved artwork is the background on every page.
+   No frame, no crop panel, no separate hero illustration.
+   ========================================================== */
+html, body { min-height:100%; background-color:#170b17 !important; }
+body {
+  border:0 !important; outline:0 !important; box-shadow:none !important;
+  background-image:url('../images/alberia-full-reference.jpg') !important;
+  background-repeat:no-repeat !important;
+  background-position:center top !important;
+  background-size:cover !important;
+  background-attachment:fixed !important;
+  background-color:#170b17 !important;
+}
+body::before, body::after { content:none !important; display:none !important; }
+.site-frame, .frame-corner { display:none !important; }
+/* The supplied reference already contains its complete header and hero composition. */
+body.home-page .header { display:none !important; }
+.grand-hero {
+  width:100% !important; max-width:none !important;
+  min-height:100vh !important; height:100vh !important;
+  margin:0 !important; padding:0 !important;
+  border:0 !important; border-radius:0 !important;
+  background:transparent !important; overflow:hidden !important;
+}
+.grand-hero-bg, .sakura-canopy, .hero-center, .hero-dragon, .hero-albedo { display:none !important; }
+/* The featured carousel is already visible in the reference wallpaper. */
+#featured { display:none !important; }
+/* Keep the rest of the real site readable over the shared wallpaper. */
+.section:not(#featured) { background:rgba(20,7,19,.58) !important; backdrop-filter:blur(3px); }
+.header {
+  background:rgba(27,8,24,.88) !important;
+  border-bottom:1px solid rgba(255,190,215,.28) !important;
+  backdrop-filter:blur(12px);
+}
+.filters, .tab-content, .game-card, .genre-card, .featured-slider, .creator-panel {
+  background-color:rgba(29,10,27,.88) !important;
+}
+.footer { background:rgba(16,5,15,.92) !important; }
+@media(max-width:900px) {
+  body { background-position:center top !important; background-attachment:fixed !important; }
+  body.home-page .grand-hero { min-height:100svh !important; height:100svh !important; }
+}
+
+
+/* ===== Requested ALBERIA header + exact approved wallpaper ===== */
+html, body { min-height:100%; }
+body {
+  background-image:url('../images/alberia-approved-background.png') !important;
+  background-repeat:no-repeat !important;
+  background-position:center top !important;
+  background-size:cover !important;
+  background-attachment:fixed !important;
+}
+body.home-page .header { display:block !important; }
+.header {
+  position:sticky !important; top:0 !important; z-index:1000 !important;
+  width:100%;
+  background:rgba(35,10,30,.86) !important;
+  border-bottom:1px solid rgba(255,190,215,.42) !important;
+  backdrop-filter:blur(12px) !important;
+}
+.header-inner { gap:clamp(.45rem,1.4vw,1.25rem) !important; }
+.nav { justify-content:center; gap:.2rem !important; }
+.nav-link { white-space:nowrap; cursor:pointer; border:0; background:transparent; font:inherit; }
+.nav-home { font-weight:700; }
+.header-tools { display:flex; align-items:center; gap:.65rem; flex:0 1 390px; min-width:230px; }
+.header-tools .search-box { flex:1 1 auto; min-width:0; }
+.header-tools .creator-btn { flex:0 0 44px; width:44px; height:44px; }
+.nav-dropdown { position:relative; }
+.nav-dropdown-toggle { display:flex; align-items:center; gap:.45rem; }
+.dropdown-caret { font-size:.75em; opacity:.8; }
+.genres-menu {
+  display:none; position:absolute; top:calc(100% + 12px); right:0; z-index:1200;
+  min-width:210px; max-height: min(65vh,420px); overflow:auto;
+  padding:.5rem; border:1px solid rgba(244,167,185,.48); border-radius:14px;
+  background:rgba(30,10,27,.97); box-shadow:0 16px 36px rgba(0,0,0,.42); backdrop-filter:blur(14px);
+}
+.genres-menu.open { display:grid; grid-template-columns:1fr; }
+.genre-menu-item { display:flex; align-items:center; gap:.65rem; padding:.62rem .75rem; color:#f8e7ef; text-decoration:none; border-radius:9px; white-space:nowrap; }
+.genre-menu-item:hover { background:rgba(244,167,185,.16); color:#ffdce8; }
+.search-suggestions {
+  display:none; position:absolute; top:calc(100% + 9px); right:0; left:0; z-index:1300;
+  max-height: min(65vh,420px); overflow:auto; padding:.45rem;
+  border:1px solid rgba(244,167,185,.48); border-radius:14px;
+  background:rgba(30,10,27,.98); box-shadow:0 16px 36px rgba(0,0,0,.42); backdrop-filter:blur(14px);
+}
+.search-suggestions.open { display:block; }
+.search-suggestion { display:flex; align-items:center; gap:.7rem; padding:.45rem; color:#f8e7ef; text-decoration:none; border-radius:9px; }
+.search-suggestion:hover,.search-all-results:hover { background:rgba(244,167,185,.15); }
+.search-suggestion img { width:36px; height:48px; object-fit:cover; border-radius:5px; }
+.search-suggestion span { display:grid; gap:.15rem; }
+.search-suggestion small { color:#c9aebc; direction:ltr; text-align:right; }
+.search-all-results { display:block; padding:.65rem .55rem; margin-top:.3rem; color:#ffdce8; text-align:center; text-decoration:none; border-top:1px solid rgba(244,167,185,.2); }
+.search-no-match { padding:.8rem .6rem; color:#e9cbd7; text-align:center; font-size:.9rem; }
+@media(max-width:900px) {
+  .header-inner { flex-wrap:wrap !important; }
+  .nav { order:3; width:100%; flex:1 0 100%; overflow:visible; flex-wrap:wrap; }
+  .header-tools { flex:1 1 250px; }
+}
+@media(max-width:560px) {
+  .header-inner { padding:.55rem .85rem !important; }
+  .logo-img { height:42px; }
+  .header-tools { min-width:0; flex:1 1 calc(100% - 60px); }
+  .header-tools .creator-btn { width:40px; height:40px; flex-basis:40px; }
+  .nav { justify-content:space-between; gap:.1rem !important; }
+  .nav-link { padding:.45rem .55rem; font-size:.82rem; }
+}
+
+/* ==========================================================
+   ALBERIA EXPLORE GATE + SAKURA POLYGON CAROUSEL
+   The approved background asset remains byte-for-byte intact.
+   ========================================================== */
+body.home-page {
+  isolation:isolate;
+  background-image:none !important;
+  background-color:#170b17 !important;
+}
+.explore-backdrop {
+  position:fixed; inset:-8px; z-index:-1; pointer-events:none;
+  background-image:url('../images/alberia-approved-background.png');
+  background-position:center center; background-repeat:no-repeat; background-size:cover;
+  transform:scale(1.015);
+  filter:none;
+  transition:filter 1.15s ease, transform 1.15s ease;
+  will-change:filter,transform;
+}
+body.home-page.explore-active .explore-backdrop {
+  filter:brightness(.39) blur(5px) saturate(.72);
+  transform:scale(1.045);
+}
+body.home-page.explore-locked {
+  height:100svh !important; min-height:100svh !important;
+  overflow:hidden !important; overscroll-behavior:none;
+}
+body.home-page.explore-locked main { height:calc(100svh - 94px); overflow:hidden; }
+body.home-page .grand-hero {
+  position:relative; width:100% !important; max-width:none !important;
+  height:100% !important; min-height:0 !important; margin:0 !important; padding:0 !important;
+  display:flex !important; align-items:flex-end !important; justify-content:center !important;
+  overflow:visible !important; background:transparent !important;
+}
+.explore-cta {
+  position:absolute; z-index:8; bottom:clamp(28px,6.5vh,76px); left:50%; transform:translateX(-50%);
+  min-width:220px; padding:17px 42px 19px; cursor:pointer;
+  color:#fff0f6; font-family:inherit; font-size:1.12rem; font-weight:800; letter-spacing:.02em;
+  background:linear-gradient(135deg,rgba(73,20,49,.94),rgba(165,53,100,.96) 52%,rgba(77,20,51,.96));
+  border:2px solid #f5a6c5;
+  clip-path:polygon(9% 0,91% 0,100% 50%,91% 100%,9% 100%,0 50%);
+  filter:drop-shadow(0 0 12px rgba(244,132,179,.58));
+  text-shadow:0 1px 8px #260d1c;
+  transition:filter .2s ease, background .2s ease, transform .2s ease;
+}
+.explore-cta span { margin-inline-start:.45rem; color:#ffd7e6; }
+.explore-cta:hover { filter:drop-shadow(0 0 20px rgba(255,151,195,.9)); background:linear-gradient(135deg,#8d315c,#ed8db5 52%,#8d315c); }
+.explore-cta:active { transform:translateX(-50%) scale(.97); }
+body.home-page.explore-active .explore-cta { opacity:0; pointer-events:none; transition:opacity .35s ease; }
+#featured.featured-section {
+  display:block !important; position:relative; z-index:2;
+  width:min(1180px,calc(100% - 48px)); margin:2.2rem auto 2.6rem !important;
+  padding:1.25rem 1.2rem 1.6rem !important;
+  background:rgba(24,7,21,.66) !important; backdrop-filter:blur(8px);
+  border:1px solid rgba(244,151,190,.32);
+  clip-path:polygon(2.2% 0,97.8% 0,100% 8%,100% 92%,97.8% 100%,2.2% 100%,0 92%,0 8%);
+  scroll-margin-top:105px;
+}
+.featured-section .section-header { margin:0 1rem 1rem; }
+.polygon-slider {
+  position:relative; display:flex; align-items:center; gap:.35rem;
+  min-height:235px; padding:14px 48px;
+  overflow:hidden; background:rgba(15,5,15,.72) !important;
+  border:2px solid rgba(245,145,188,.82) !important;
+  clip-path:polygon(2.2% 0,97.8% 0,100% 12%,100% 88%,97.8% 100%,2.2% 100%,0 88%,0 12%);
+}
+.slider-viewport { width:100%; overflow:hidden; direction:ltr; }
+#sliderTrack.slider-track {
+  display:flex; flex-wrap:nowrap; align-items:stretch; gap:16px;
+  width:max-content; direction:ltr; padding:7px 0;
+  animation:alberia-featured-loop 48s linear infinite;
+  will-change:transform;
+}
+#sliderTrack.is-paused { animation-play-state:paused; }
+.featured-game {
+  display:flex; flex:0 0 150px; flex-direction:column; align-items:center; gap:7px;
+  width:150px; padding:9px 9px 11px; color:#ffe9f1; text-decoration:none; text-align:center;
+  background:linear-gradient(160deg,rgba(83,29,59,.92),rgba(22,9,22,.96));
+  border:1px solid rgba(244,157,191,.8);
+  clip-path:polygon(9% 0,91% 0,100% 9%,100% 91%,91% 100%,9% 100%,0 91%,0 9%);
+  transition:transform .2s ease, filter .2s ease;
+}
+.featured-game:hover { transform:translateY(-5px); filter:drop-shadow(0 0 10px rgba(244,139,180,.7)); }
+.featured-game-art { display:block; width:100%; height:154px; overflow:hidden; background:#160b17; clip-path:polygon(7% 0,93% 0,100% 7%,100% 93%,93% 100%,7% 100%,0 93%,0 7%); }
+.featured-game-art img { width:100%; height:100%; display:block; object-fit:cover; }
+.featured-game-title { max-width:100%; font-size:.88rem; font-weight:800; line-height:1.45; }
+.featured-game-year { color:#dba8bd; font-size:.75rem; }
+.polygon-slider .slider-nav {
+  position:absolute; z-index:4; top:50%; transform:translateY(-50%);
+  width:38px; height:48px; display:grid; place-items:center;
+  color:#ffeaf2; font-size:2rem; cursor:pointer;
+  background:rgba(104,31,69,.92); border:1px solid #f3a0c0;
+  clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
+}
+.polygon-slider .slider-nav:hover { background:#c65e8b; }
+.polygon-slider .slider-nav.prev { left:8px; }
+.polygon-slider .slider-nav.next { right:8px; }
+@keyframes alberia-featured-loop {
+  from { transform:translateX(0); }
+  to { transform:translateX(50%); }
+}
+body.home-page.explore-active #popular,
+body.home-page.explore-active #genres,
+body.home-page.explore-active #new,
+body.home-page.explore-active #upcoming { scroll-margin-top:100px; }
+@media(max-width:900px) {
+  body.home-page.explore-locked main { height:calc(100svh - 142px); }
+  body.home-page .grand-hero { min-height:0 !important; }
+  .explore-cta { bottom:clamp(24px,5vh,56px); }
+  #featured.featured-section { width:calc(100% - 26px); padding:1rem .5rem 1.2rem !important; }
+  .polygon-slider { padding:12px 39px; min-height:210px; }
+  .featured-game { flex-basis:132px; width:132px; }
+  .featured-game-art { height:136px; }
+}
+@media(max-width:560px) {
+  body.home-page.explore-locked main { height:calc(100svh - 158px); }
+  .explore-cta { min-width:190px; padding:14px 32px 16px; font-size:1rem; }
+  .polygon-slider { padding-inline:34px; }
+  .featured-game { flex-basis:116px; width:116px; }
+  .featured-game-art { height:120px; }
+  #sliderTrack.slider-track { gap:10px; animation-duration:38s; }
+}
+@media(prefers-reduced-motion:reduce) {
+  #sliderTrack.slider-track { animation:none; }
+  .explore-backdrop { transition:none; }
+  html { scroll-behavior:auto; }
+}
+/* Keep the entry hero full-height after the gate unlocks and content begins scrolling. */
+body.home-page .grand-hero { height:calc(100svh - 94px) !important; }
+@media(max-width:900px) { body.home-page .grand-hero { height:calc(100svh - 142px) !important; } }
+@media(max-width:560px) { body.home-page .grand-hero { height:calc(100svh - 158px) !important; } }
+
+/* ALBERIA final requested refinements */
+/* Internal pages use a dedicated dark atmosphere; the home hero keeps its approved art. */
+body:not(.home-page) { background:#100811 !important; background-image:radial-gradient(ellipse at 50% 0%,rgba(104,35,75,.20),transparent 48%),linear-gradient(180deg,#100811,#080509) !important; }
+body:not(.home-page)::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; background:rgba(8,3,9,.22); }
+/* Five compact cards per desktop row. */
+.games-grid { grid-template-columns:repeat(5,minmax(0,1fr)) !important; gap:1rem !important; }
+.game-card { min-width:0; }
+.game-card img { aspect-ratio:2/3; object-fit:cover; }
+@media(max-width:1100px){.games-grid{grid-template-columns:repeat(4,minmax(0,1fr)) !important}}
+@media(max-width:800px){.games-grid{grid-template-columns:repeat(3,minmax(0,1fr)) !important}}
+@media(max-width:560px){.games-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important}}
+/* Tree-bark carved CTA */
+.explore-cta { color:#ffe9d0 !important; border:3px solid #d79a73 !important; background:linear-gradient(145deg,#493020,#765039 45%,#352015) !important; box-shadow:inset 0 0 0 2px rgba(255,214,169,.12),0 9px 24px rgba(0,0,0,.45) !important; clip-path:polygon(7% 0,94% 3%,100% 22%,97% 78%,91% 100%,8% 96%,0 76%,3% 18%) !important; transition:transform .28s cubic-bezier(.2,.8,.2,1),filter .28s ease,letter-spacing .28s ease !important; }
+.explore-cta:hover { transform:translateX(-50%) translateY(-5px) rotate(-1deg) scale(1.045) !important; filter:drop-shadow(0 0 16px rgba(241,166,190,.85)) brightness(1.18) !important; letter-spacing:.08em; }
+/* Genre carousel: six tiles per view, horizontal auto motion. */
+#genres .genres-grid { display:flex !important; flex-wrap:nowrap !important; gap:14px !important; overflow-x:auto !important; scroll-snap-type:x mandatory; padding:12px 4px 20px; scrollbar-color:#c66b91 #21101d; }
+#genres .genre-card { flex:0 0 calc((100% - 70px)/6) !important; min-width:145px; min-height:180px; position:relative; overflow:hidden; display:flex; justify-content:flex-end; align-items:center; flex-direction:column; background-size:cover !important; background-position:center !important; scroll-snap-align:start; }
+#genres .genre-card::before { content:""; position:absolute; inset:0; background:linear-gradient(0deg,rgba(12,4,12,.94),rgba(12,4,12,.08)); }
+#genres .genre-card > * { position:relative; z-index:1; }
+/* Platform tree-carved tiles */
+.platform-section { margin:2rem auto; }
+.platform-tiles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.platform-tile { position:relative; min-height:118px; padding:1.2rem; display:flex; align-items:center; justify-content:center; gap:14px; color:#fce9d7; text-decoration:none; font-weight:900; font-size:1.2rem; background:linear-gradient(145deg,#4b3224,#76523a 48%,#302015); border:3px solid #b98560; border-radius:22px 12px 25px 14px; box-shadow:inset 0 0 0 2px rgba(255,224,190,.08),0 12px 22px #0007; clip-path:polygon(4% 3%,96% 0,100% 18%,97% 92%,90% 100%,6% 96%,0 78%,2% 20%); transition:.25s ease; }
+.platform-tile:hover,.platform-tile.active { transform:translateY(-5px) scale(1.02); border-color:#f4a7b9; filter:drop-shadow(0 0 12px #e78eae88); }
+.platform-tile .platform-mark { font-size:2rem; }
+.platform-results { margin-top:1.2rem; }
+@media(max-width:650px){.platform-tiles{grid-template-columns:1fr}.platform-tile{min-height:82px}}
+/* After entering Explore, visitors can continue downward but cannot return above Featured. */
+body.home-page.explore-active { overscroll-behavior-y:none; }
+
+/* Platform showcase styling (portal temporarily disabled). */
+/* Featured games: an uninterrupted, duplicated ticker loop. */
+#featured.featured-section { display:block !important; }
+#sliderViewport { overflow:hidden; }
+#sliderTrack.slider-track { width:max-content; animation:alberia-featured-loop 48s linear infinite; }
+#sliderTrack .featured-game { flex-shrink:0; }
+#sliderTrack:hover { animation-play-state:paused; }
+
+/* Large console / PC product artwork instead of text tiles. */
+.platform-tiles { grid-template-columns:repeat(3,minmax(0,1fr)); align-items:stretch; gap:clamp(14px,2.2vw,28px); }
+.platform-tile {
+  min-height:0; height:clamp(230px,27vw,350px); padding:14px 14px 18px;
+  display:flex; flex-direction:column; justify-content:space-between; align-items:center; gap:8px;
+  overflow:hidden; clip-path:none; border:1px solid rgba(242,177,211,.42); border-radius:20px;
+  background:linear-gradient(160deg,rgba(35,14,38,.92),rgba(12,7,18,.96));
+  box-shadow:0 12px 30px rgba(0,0,0,.35),inset 0 0 24px rgba(191,111,255,.08);
+  transition:transform .38s cubic-bezier(.2,.8,.2,1),border-color .3s ease,box-shadow .3s ease,filter .3s ease;
+}
+.platform-art { width:100%; flex:1; min-height:0; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.platform-art img { display:block; width:100%; height:100%; max-height:270px; object-fit:contain; filter:drop-shadow(0 10px 18px rgba(0,0,0,.45)); transition:transform .45s cubic-bezier(.2,.8,.2,1),filter .35s ease; }
+.platform-name { display:block; color:#ffe7f3; font-size:clamp(.95rem,1.5vw,1.2rem); font-weight:900; text-shadow:0 0 12px rgba(238,137,196,.45); }
+.platform-tile:hover,.platform-tile:focus-visible,.platform-tile.active {
+  transform:translateY(-10px) scale(1.035) rotate(-.5deg); border-color:#f7a8d5;
+  box-shadow:0 20px 44px rgba(0,0,0,.5),0 0 30px rgba(219,112,255,.24),inset 0 0 30px rgba(218,125,255,.12);
+  filter:brightness(1.08);
+}
+.platform-tile:hover .platform-art img,.platform-tile:focus-visible .platform-art img { transform:scale(1.09) rotate(1deg); filter:drop-shadow(0 14px 22px rgba(211,117,255,.35)); }
+.platform-results { min-height:120px; }
+.platform-empty { grid-column:1/-1; text-align:center; color:#f5c5dc; padding:2rem; }
+#genres .genre-card { background-size:cover !important; background-position:center 28% !important; }
+@media(max-width:800px) {
+  .platform-tiles { grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+  .platform-tile { height:210px; padding:10px 8px 13px; }
+  .platform-art img { max-height:160px; }
+}
+@media(max-width:560px) {
+  .portal-entry { top:51%; gap:16px; }
+  .living-portal { width:clamp(170px,58vw,230px); }
+  .platform-tiles { grid-template-columns:1fr; gap:14px; }
+  .platform-tile { height:220px; }
+  .platform-art img { max-height:175px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .living-portal,.portal-aura,.portal-ring-one,.portal-ring-two,.portal-core,.portal-spark { animation:none !important; }
+  .platform-tile,.platform-art img { transition:none !important; }
+}
+
+/* Focused refinement: bounded featured rail and progressive platform reveal. */
+#sliderViewport {
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  scrollbar-width:none;
+  scroll-behavior:auto;
+  overscroll-behavior-x:contain;
+}
+#sliderViewport::-webkit-scrollbar { display:none; }
+#sliderTrack.slider-track {
+  width:max-content !important;
+  animation:none !important;
+  transform:none !important;
+  gap:16px;
+  will-change:scroll-position;
+}
+#sliderTrack .featured-game { flex:0 0 150px; }
+.platform-results { align-items:stretch; }
+.platform-results > [hidden] { display:none !important; }
+.platform-expand {
+  position:relative;
+  width:min(360px,85%);
+  margin:1rem auto 0;
+  padding:1.15rem .8rem .25rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.3rem;
+  border:0;
+  color:#ffe5f1;
+  background:transparent;
+  cursor:pointer;
+  font:inherit;
+  font-weight:800;
+  text-shadow:0 0 12px rgba(230,132,190,.55);
+}
+.platform-expand[hidden] { display:none !important; }
+.platform-expand-line {
+  width:100%; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(245,161,205,.95),transparent);
+  box-shadow:0 0 9px rgba(231,124,190,.6);
+}
+.platform-expand-arrow {
+  display:grid; place-items:center;
+  width:34px; height:34px; margin-top:-.9rem;
+  border:1px solid rgba(246,164,207,.8); border-radius:50%;
+  background:#210d20; color:#ffd7ea;
+  font-size:1.3rem; line-height:1;
+  box-shadow:0 0 15px rgba(226,112,190,.45);
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+.platform-expand:hover .platform-expand-arrow { transform:translateY(4px); box-shadow:0 0 22px rgba(240,133,205,.8); }
+.platform-expand-label { font-size:.9rem; }
+@media(prefers-reduced-motion:reduce) { #sliderTrack { scroll-behavior:auto !important; } }
